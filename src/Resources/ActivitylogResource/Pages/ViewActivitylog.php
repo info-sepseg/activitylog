@@ -1,9 +1,9 @@
 <?php
 
-namespace Entigra\\Activitylog\Resources\ActivitylogResource\Pages;
+namespace Entigra\Activitylog\Resources\ActivitylogResource\Pages;
 
 use Filament\Resources\Pages\ViewRecord;
-use Entigra\\Activitylog\Resources\ActivitylogResource;
+use Entigra\Activitylog\Resources\ActivitylogResource;
 
 class ViewActivitylog extends ViewRecord
 {

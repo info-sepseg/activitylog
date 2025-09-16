@@ -1,11 +1,11 @@
 <?php
 
-namespace Entigra\\Activitylog\Infolists\Components;
+namespace Entigra\Activitylog\Infolists\Components;
 
 use Filament\Infolists\Components\Entry;
 use Illuminate\Support\HtmlString;
-use Entigra\\Activitylog\ActivitylogPlugin;
-use Entigra\\Activitylog\Infolists\Concerns\HasModifyState;
+use Entigra\Activitylog\ActivitylogPlugin;
+use Entigra\Activitylog\Infolists\Concerns\HasModifyState;
 
 class TimeLinePropertiesEntry extends Entry
 {

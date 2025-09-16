@@ -1,6 +1,6 @@
 <?php
 
-namespace Entigra\\Activitylog\Infolists\Components;
+namespace Entigra\Activitylog\Infolists\Components;
 
 use Closure;
 use Filament\Forms\Components\Concerns\CanAllowHtml;
@@ -8,8 +8,8 @@ use Filament\Infolists\Components\Entry;
 use Filament\Support\Concerns\HasExtraAttributes;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
-use Entigra\\Activitylog\ActivitylogPlugin;
-use Entigra\\Activitylog\Infolists\Concerns\HasModifyState;
+use Entigra\Activitylog\ActivitylogPlugin;
+use Entigra\Activitylog\Infolists\Concerns\HasModifyState;
 
 class TimeLineTitleEntry extends Entry
 {

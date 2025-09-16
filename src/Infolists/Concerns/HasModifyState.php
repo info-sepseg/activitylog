@@ -1,6 +1,6 @@
 <?php
 
-namespace Entigra\\Activitylog\Infolists\Concerns;
+namespace Entigra\Activitylog\Infolists\Concerns;
 
 use Closure;
 use Illuminate\Support\HtmlString;

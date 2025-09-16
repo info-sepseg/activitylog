@@ -1,6 +1,6 @@
 <?php
 
-namespace Entigra\\Activitylog\Infolists\Components;
+namespace Entigra\Activitylog\Infolists\Components;
 
 use Filament\Infolists\Components\IconEntry;
 
