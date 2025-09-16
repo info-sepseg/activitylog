@@ -1,6 +1,7 @@
 <?php
 
-namespace Rmsramos\Activitylog\Resources\ActivitylogResource;
+namespace Entigra\Activitylog\Resources\ActivitylogResource;
+
 
 use ActivitylogForm;
 use Exception;
@@ -24,13 +25,13 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 use Livewire\Component as Livewire;
-use Rmsramos\Activitylog\Actions\Concerns\ActionContent;
-use Rmsramos\Activitylog\ActivitylogPlugin;
-use Rmsramos\Activitylog\Helpers\ActivityLogHelper;
-use Rmsramos\Activitylog\RelationManagers\ActivitylogRelationManager;
-use Rmsramos\Activitylog\Resources\ActivitylogResource\Pages\ListActivitylog;
-use Rmsramos\Activitylog\Resources\ActivitylogResource\Pages\ViewActivitylog;
-use Rmsramos\Activitylog\Traits\HasCustomActivityResource;
+use Entigra\Activitylog\Actions\Concerns\ActionContent;
+use Entigra\Activitylog\ActivitylogPlugin;
+use Entigra\Activitylog\Helpers\ActivityLogHelper;
+use Entigra\Activitylog\RelationManagers\ActivitylogRelationManager;
+use Entigra\Activitylog\Resources\ActivitylogResource\Pages\ListActivitylog;
+use Entigra\Activitylog\Resources\ActivitylogResource\Pages\ViewActivitylog;
+use Entigra\Activitylog\Traits\HasCustomActivityResource;
 use Spatie\Activitylog\Models\Activity;
 
 class ActivitylogResource extends Resource
@@ -92,13 +93,13 @@ class ActivitylogResource extends Resource
                     $resourceModel = $model->getFilamentActualResourceModel($record);
                     $resourcePluralName = ActivityLogHelper::getResourcePluralName($resourceModel);
 
-                    return route('filament.'.$panelID.'.resources.'.$resourcePluralName.'.edit', ['record' => $resourceModel->id]);
+                    return route('filament.' . $panelID . '.resources.' . $resourcePluralName . '.edit', ['record' => $resourceModel->id]);
                 }
 
                 // Fallback to a standard resource mapping
                 $resourcePluralName = ActivityLogHelper::getResourcePluralName($record->subject_type);
 
-                return route('filament.'.$panelID.'.resources.'.$resourcePluralName.'.edit', ['record' => $record->subject_id]);
+                return route('filament.' . $panelID . '.resources.' . $resourcePluralName . '.edit', ['record' => $record->subject_id]);
             } catch (Exception $e) {
                 // If there's any error generating the URL, return placeholder
                 return '#';
@@ -108,8 +109,10 @@ class ActivitylogResource extends Resource
         return '#';
     }
 
-    public static function form(Schema $schema): Schema
+    public static function schema(Schema $schema): Schema
     {
+        // The ActivitylogForm class might need to be updated to use Filament\Forms\Form instead of Schema
+        // or ensure ActivitylogForm is correctly importing Schema.
         return ActivitylogForm::configure($schema);
     }
 
@@ -167,7 +170,7 @@ class ActivitylogResource extends Resource
     {
         return TextColumn::make('log_name')
             ->label(__('activitylog::tables.columns.log_name.label'))
-            ->formatStateUsing(fn ($state) => $state ? ucwords($state) : '-')
+            ->formatStateUsing(fn($state) => $state ? ucwords($state) : '-')
             ->searchable()
             ->sortable()
             ->badge();
@@ -177,9 +180,9 @@ class ActivitylogResource extends Resource
     {
         return TextColumn::make('event')
             ->label(__('activitylog::tables.columns.event.label'))
-            ->formatStateUsing(fn ($state) => $state ? ucwords(__('activitylog::action.event.'.$state)) : '-')
+            ->formatStateUsing(fn($state) => $state ? ucwords(__('activitylog::action.event.' . $state)) : '-')
             ->badge()
-            ->color(fn (?string $state): string => match ($state) {
+            ->color(fn(?string $state): string => match ($state) {
                 'draft' => 'gray',
                 'updated' => 'warning',
                 'created' => 'success',
@@ -201,7 +204,7 @@ class ActivitylogResource extends Resource
                     return '-';
                 }
 
-                $subjectInfo = Str::of($state)->afterLast('\\')->headline().' # '.$record->subject_id;
+                $subjectInfo = Str::of($state)->afterLast('\\')->headline() . ' # ' . $record->subject_id;
 
                 if ($record->subject) {
                     if (method_exists($record->subject, 'trashed') && $record->subject->trashed()) {
@@ -214,7 +217,7 @@ class ActivitylogResource extends Resource
                 return $subjectInfo;
             })
             ->searchable()
-            ->hidden(fn (Livewire $livewire) => $livewire instanceof ActivitylogRelationManager);
+            ->hidden(fn(Livewire $livewire) => $livewire instanceof ActivitylogRelationManager);
     }
 
     public static function getCauserNameColumnComponent(): Column
@@ -263,7 +266,7 @@ class ActivitylogResource extends Resource
     {
         $field = DatePicker::make($label)
             ->format(ActivitylogPlugin::get()->getDateFormat())
-            ->label(__('activitylog::tables.filters.created_at.'.$label));
+            ->label(__('activitylog::tables.filters.created_at.' . $label));
 
         // Apply the custom callback if set
         $callback = ActivitylogPlugin::get()->getDatePickerCallback();
@@ -307,11 +310,11 @@ class ActivitylogResource extends Resource
                 return $query
                     ->when(
                         $data['created_from'] ?? null,
-                        fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                        fn(Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
                     )
                     ->when(
                         $data['created_until'] ?? null,
-                        fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                        fn(Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
                     );
             });
     }
@@ -320,9 +323,10 @@ class ActivitylogResource extends Resource
     {
         return SelectFilter::make('event')
             ->label(__('activitylog::tables.filters.event.label'))
-            ->options(static::getModel()::distinct()
-                ->pluck('event', 'event')
-                ->mapWithKeys(fn ($value, $key) => [$key => __('activitylog::action.event.'.$value)])
+            ->options(
+                static::getModel()::distinct()
+                    ->pluck('event', 'event')
+                    ->mapWithKeys(fn($value, $key) => [$key => __('activitylog::action.event.' . $value)])
             );
     }
 
@@ -471,8 +475,10 @@ class ActivitylogResource extends Resource
             return false;
         }
 
-        if (! method_exists($record->subject, 'trashed') ||
-            ! method_exists($record->subject, 'restore')) {
+        if (
+            ! method_exists($record->subject, 'trashed') ||
+            ! method_exists($record->subject, 'restore')
+        ) {
             return false;
         }
 
@@ -543,13 +549,12 @@ class ActivitylogResource extends Resource
                 ->title(__('activitylog::notifications.model_successfully_restored'))
                 ->success()
                 ->send();
-
         } catch (Exception $e) {
             DB::rollBack();
 
             Notification::make()
                 ->title(__('activitylog::notifications.error_restoring_model'))
-                ->body('Erro: '.$e->getMessage())
+                ->body('Erro: ' . $e->getMessage())
                 ->danger()
                 ->send();
         }

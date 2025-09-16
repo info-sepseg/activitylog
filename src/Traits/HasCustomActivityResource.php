@@ -1,6 +1,6 @@
 <?php
 
-namespace Rmsramos\Activitylog\Traits;
+namespace Entigra\Activitylog\Traits;
 
 use Illuminate\Database\Eloquent\Model;
 

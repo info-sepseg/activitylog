@@ -1,6 +1,6 @@
 <?php
 
-namespace Rmsramos\Activitylog\Actions\Concerns;
+namespace Entigra\Activitylog\Actions\Concerns;
 
 use Carbon\Exceptions\InvalidFormatException;
 use Closure;
@@ -11,11 +11,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Collection;
-use Rmsramos\Activitylog\ActivitylogPlugin;
-use Rmsramos\Activitylog\Infolists\Components\TimeLineIconEntry;
-use Rmsramos\Activitylog\Infolists\Components\TimeLinePropertiesEntry;
-use Rmsramos\Activitylog\Infolists\Components\TimeLineRepeatableEntry;
-use Rmsramos\Activitylog\Infolists\Components\TimeLineTitleEntry;
+use Entigra\Activitylog\ActivitylogPlugin;
+use Entigra\Activitylog\Infolists\Components\TimeLineIconEntry;
+use Entigra\Activitylog\Infolists\Components\TimeLinePropertiesEntry;
+use Entigra\Activitylog\Infolists\Components\TimeLineRepeatableEntry;
+use Entigra\Activitylog\Infolists\Components\TimeLineTitleEntry;
 use Spatie\Activitylog\Models\Activity;
 
 trait ActionContent
@@ -61,8 +61,8 @@ trait ActionContent
         $this->configureModal();
         $this->activitiesUsing        = null;
         $this->modifyTitleUsing       = null;
-        $this->shouldModifyTitleUsing = fn () => true;
-        $this->modifyQueryUsing       = fn ($builder) => $builder;
+        $this->shouldModifyTitleUsing = fn() => true;
+        $this->modifyQueryUsing       = fn($builder) => $builder;
         $this->modalHeading           = __('activitylog::action.modal.heading');
         $this->modalDescription       = __('activitylog::action.modal.description');
 
@@ -92,7 +92,7 @@ trait ActionContent
 
                                     if ($relationInstance instanceof BelongsToMany) {
                                         $subjectType = $relationInstance->getPivotClass();
-                                        $relatedIds  = $relationInstance->pluck($relationInstance->getTable().'.id')->toArray();
+                                        $relatedIds  = $relationInstance->pluck($relationInstance->getTable() . '.id')->toArray();
 
                                         if (! empty($relatedIds)) {
                                             $query->orWhere(function (Builder $q) use ($subjectType, $relatedIds) {
@@ -146,7 +146,7 @@ trait ActionContent
     {
         $this->slideOver()
             ->modalIcon('heroicon-o-eye')
-            ->modalFooterActions(fn () => [])
+            ->modalFooterActions(fn() => [])
             ->tooltip(__('activitylog::action.modal.tooltip'))
             ->icon('heroicon-o-bell-alert');
     }

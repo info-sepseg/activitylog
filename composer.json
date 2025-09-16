@@ -1,25 +1,32 @@
 {
-    "name": "rmsramos/activitylog",
+    "name": "entigra/activitylog",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/info-sepseg/activitylog"
+        }
+    ],
     "description": "This is my package activitylog",
     "keywords": [
-        "Rmsramos",
+        "Entigra",
         "laravel",
         "activitylog"
     ],
-    "homepage": "https://github.com/rmsramos/activitylog",
+    "homepage": "https://github.com/entigra/activitylog",
     "license": "MIT",
     "authors": [
         {
-            "name": "Rômulo Ramos",
-            "email": "rmsramos@gmail.com",
+            "name": "Entigra",
+            "email": "ruirocha@entigra.pt",
             "role": "Developer"
         }
     ],
     "require": {
         "php": "^8.2",
         "illuminate/contracts": "^11.0||^12.0",
-        "spatie/laravel-activitylog": "^4.8",
-        "spatie/laravel-package-tools": "^1.16"
+        "spatie/laravel-activitylog": "^4.10",
+        "spatie/laravel-package-tools": "^1.16",
+        "filament/filament": "^4.0"
     },
     "require-dev": {
         "larastan/larastan": "^2.9",
@@ -35,13 +42,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Rmsramos\\Activitylog\\": "src/",
-            "Rmsramos\\Activitylog\\Database\\Factories\\": "database/factories/"
+            "Entigra\\Activitylog\\": "src/",
+            "Entigra\\Activitylog\\Database\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Rmsramos\\Activitylog\\Tests\\": "tests/",
+            "Entigra\\Activitylog\\Tests\\": "tests/",
             "Workbench\\App\\": "workbench/app/"
         }
     },
@@ -73,10 +80,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Rmsramos\\Activitylog\\ActivitylogServiceProvider"
+                "Entigra\\Activitylog\\ActivitylogServiceProvider"
             ],
             "aliases": {
-                "Activitylog": "Rmsramos\\Activitylog\\Facades\\Activitylog"
+                "Activitylog": "Entigra\\Activitylog\\Facades\\Activitylog"
             }
         }
     },

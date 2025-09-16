@@ -1,14 +1,14 @@
 <?php
 
-namespace Rmsramos\Activitylog\RelationManagers;
+namespace Entigra\Activitylog\RelationManagers;
 
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
-use Rmsramos\Activitylog\ActivitylogPlugin;
-use Rmsramos\Activitylog\Resources\ActivitylogResource;
+use Entigra\Activitylog\ActivitylogPlugin;
+use Entigra\Activitylog\Resources\ActivitylogResource;
 
 class ActivitylogRelationManager extends RelationManager
 {
@@ -24,9 +24,9 @@ class ActivitylogRelationManager extends RelationManager
             ->headline();
     }
 
-    public function form(Form $form): Form
+    public function schema(Form $form): Form
     {
-        return ActivitylogResource::form($form);
+        return ActivitylogResource::schema($form);
     }
 
     public function table(Table $table): Table
@@ -34,7 +34,7 @@ class ActivitylogRelationManager extends RelationManager
         return ActivitylogResource::table(
             $table
                 ->heading(ActivitylogPlugin::get()->getPluralLabel())
-                ->actions([
+                ->recordActions([
                     ViewAction::make(),
                 ])
         );

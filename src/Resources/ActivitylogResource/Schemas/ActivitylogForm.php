@@ -6,7 +6,7 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Model;
-use Rmsramos\Activitylog\ActivitylogPlugin;
+use Entigra\\Activitylog\ActivitylogPlugin;
 
 class ActivitylogForm
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Rmsramos\Activitylog;
+namespace Entigra\Activitylog;
 
 use Closure;
 use Filament\Contracts\Plugin;
@@ -169,7 +169,7 @@ class ActivitylogPlugin implements Plugin
 
     public function getDateParser(): ?Closure
     {
-        return $this->dateParser ?? fn ($date) => Carbon::parse($date);
+        return $this->dateParser ?? fn($date) => Carbon::parse($date);
     }
 
     public function getNavigationIcon(): ?string

@@ -1,9 +1,9 @@
 <?php
 
-namespace Rmsramos\Activitylog\Actions;
+namespace Entigra\\Activitylog\Actions;
 
 use Filament\Actions\Action;
-use Rmsramos\Activitylog\Actions\Concerns\ActionContent;
+use Entigra\\Activitylog\Actions\Concerns\ActionContent;
 
 class ActivityLogTimelineSimpleAction extends Action
 {

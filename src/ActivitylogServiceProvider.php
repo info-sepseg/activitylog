@@ -1,6 +1,6 @@
 <?php
 
-namespace Rmsramos\Activitylog;
+namespace Entigra\Activitylog;
 
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
