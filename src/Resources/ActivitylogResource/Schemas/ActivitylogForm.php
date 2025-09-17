@@ -1,12 +1,12 @@
 <?php
 
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use Entigra\Activitylog\ActivitylogPlugin;
+use Spatie\Activitylog\Models\Activity;
 
 class ActivitylogForm
 {
@@ -14,55 +14,64 @@ class ActivitylogForm
     {
         return $schema
             ->components([
-                Section::make([
-                    TextInput::make('causer_id')
-                        ->afterStateHydrated(function ($component, ?Model $record) {
-                            return $component->state($record?->causer?->name ?? '-');
-                        })
-                        ->label(__('activitylog::forms.fields.causer.label')),
+                Section::make()
+                    ->columnSpanFull()
+                    ->schema([
+                        TextEntry::make('causer')
+                            ->state(function (?Model $record): string {
+                                /** @var Activity $record */
+                                return $record?->causer?->name ?? '-';
+                            })
+                            ->label(__('activitylog::forms.fields.causer.label')),
 
-                    TextInput::make('subject_type')
-                        ->afterStateHydrated(function ($component, ?Model $record, $state) {
-                            /** @var Activity $record */
-                            return $state ? $component->state(Str::of($state)->afterLast('\\')->headline().' # '.$record->subject_id) : $component->state('-');
-                        })
-                        ->label(__('activitylog::forms.fields.subject_type.label')),
+                        TextEntry::make('subject_type')
+                            ->state(function (?Model $record): string {
+                                /** @var Activity $record */
+                                $state = $record?->subject_type;
+                                return $state ? Str::of($state)->afterLast('\\')->headline() . ' # ' . $record->subject_id : '-';
+                            })
+                            ->label(__('activitylog::forms.fields.subject_type.label')),
 
-                    Textarea::make('description')
-                        ->label(__('activitylog::forms.fields.description.label'))
-                        ->rows(2)
-                        ->columnSpan('full'),
-                ]),
+                        TextEntry::make('description')
+                            ->state(function (?Model $record): string {
+                                /** @var Activity $record */
+                                return $record?->description ?? '-';
+                            })
+                            ->label(__('activitylog::forms.fields.description.label'))
+                            ->columnSpan('full'),
+                    ]),
 
-                Section::make([
-                    TextEntry::make('log_name')
-                        ->content(function (?Model $record): string {
-                            /** @var Activity $record */
-                            return $record?->log_name ? ucwords($record->log_name) : '-';
-                        })
-                        ->label(__('activitylog::forms.fields.log_name.label')),
+                Section::make()
+                    ->columnSpanFull()
+                    ->schema([
+                        TextEntry::make('log_name')
+                            ->state(function (?Model $record): string {
+                                /** @var Activity $record */
+                                return $record?->log_name ? ucwords($record->log_name) : '-';
+                            })
+                            ->label(__('activitylog::forms.fields.log_name.label')),
 
-                    TextEntry::make('event')
-                        ->content(function (?Model $record): string {
-                            /** @var Activity $record */
-                            return $record?->event ? ucwords(__('activitylog::action.event.'.$record->event)) : '-';
-                        })
-                        ->label(__('activitylog::forms.fields.event.label')),
+                        TextEntry::make('event')
+                            ->state(function (?Model $record): string {
+                                /** @var Activity $record */
+                                return $record?->event ? ucwords(__('activitylog::action.event.' . $record->event)) : '-';
+                            })
+                            ->label(__('activitylog::forms.fields.event.label')),
 
-                    TextEntry::make('created_at')
-                        ->label(__('activitylog::forms.fields.created_at.label'))
-                        ->content(function (?Model $record): string {
-                            /** @var Activity $record */
-                            if (! $record?->created_at) {
-                                return '-';
-                            }
+                        TextEntry::make('created_at')
+                            ->state(function (?Model $record): string {
+                                /** @var Activity $record */
+                                if (! $record?->created_at) {
+                                    return '-';
+                                }
 
-                            $parser = ActivitylogPlugin::get()->getDateParser();
+                                $parser = ActivitylogPlugin::get()->getDateParser();
 
-                            return $parser($record->created_at)
-                                ->format(ActivitylogPlugin::get()->getDatetimeFormat());
-                        }),
-                ]),
+                                return $parser($record->created_at)
+                                    ->format(ActivitylogPlugin::get()->getDatetimeFormat());
+                            })
+                            ->label(__('activitylog::forms.fields.created_at.label')),
+                    ]),
             ]);
     }
 }
