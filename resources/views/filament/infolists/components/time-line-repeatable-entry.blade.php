@@ -12,7 +12,7 @@
             )->merge($getExtraAttributes(), escape: false)->class(['fi-in-repeatable', 'fi-contained' => $isContained]) }}>
         @if (count($childComponentContainers = $getChildComponentContainers()))
             <ol class="relative border-gray-200 border-s dark:border-gray-700">
-                <x-filament::grid :default="$getGridColumns('default')" :sm="$getGridColumns('sm')" :md="$getGridColumns('md')" :lg="$getGridColumns('lg')"
+                <x-filament-schemas::grid :default="$getGridColumns('default')" :sm="$getGridColumns('sm')" :md="$getGridColumns('md')" :lg="$getGridColumns('lg')"
                     :xl="$getGridColumns('xl')" :two-xl="$getGridColumns('2xl')" class="gap-2">
                     @foreach ($childComponentContainers as $container)
                         <li @class([
@@ -23,7 +23,7 @@
                             {{ $container }}
                         </li>
                     @endforeach
-                </x-filament::grid>
+                </x-filament-schemas::grid>
             </ol>
         @elseif (($placeholder = $getPlaceholder()) !== null)
             <p class="text-gray-500 fi-in-placeholder dark:text-gray-400">
