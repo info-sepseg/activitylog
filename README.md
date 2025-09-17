@@ -2,14 +2,14 @@
 
 ### Spatie/Laravel-activitylog for Filament
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/rmsramos/activitylog.svg?style=flat-square)](https://packagist.org/packages/rmsramos/activitylog)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/entigra/activitylog.svg?style=flat-square)](https://packagist.org/packages/entigra/activitylog)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.md)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/rmsramos/activitylog/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/rmsramos/activitylog/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/rmsramos/activitylog.svg?style=flat-square)](https://packagist.org/packages/rmsramos/activitylog/stats)
+[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/entigra/activitylog/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/entigra/activitylog/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
+[![Total Downloads](https://img.shields.io/packagist/dt/entigra/activitylog.svg?style=flat-square)](https://packagist.org/packages/entigra/activitylog/stats)
 
 <div class="filament-hidden">
 
-![Screenshot of Application Feature](https://raw.githubusercontent.com/rmsramos/activitylog/main/arts/cover.jpeg)
+![Screenshot of Application Feature](https://raw.githubusercontent.com/entigra/activitylog/main/arts/cover.jpeg)
 
 </div>
 
@@ -17,9 +17,9 @@ This package provides a Filament resource that shows you all of the activity log
 
 ## Requirements
 
--   Laravel v12
--   Filament v3
--   Spatie/Laravel-activitylog v4
+-   Laravel ^11.0|^12.0
+-   Filament ^4.0
+-   Spatie/Laravel-activitylog ^4.10
 
 ## Languages Supported
 
@@ -42,7 +42,7 @@ ActivityLog Plugin is translated for :
 You can install the package via composer:
 
 ```bash
-composer require rmsramos/activitylog
+composer require entigra/activitylog
 ```
 
 After that run the install command:
@@ -84,7 +84,7 @@ return [
         'default_sort_column'       => 'id',
         'default_sort_direction'    => 'desc',
         'navigation_count_badge'    => false,
-        'resource'                  => \Rmsramos\Activitylog\Resources\ActivitylogResource::class,
+        'resource'                  => \Entigra\Activitylog\Resources\ActivitylogResource::class,
     ],
     'date_format'     => 'd/m/Y',
     'datetime_format' => 'd/m/Y H:i:s',
@@ -126,14 +126,14 @@ class NewsItem extends Model
 
 ## Plugin usage
 
-![Screenshot of Application Feature](https://raw.githubusercontent.com/rmsramos/activitylog/main/arts/resource.png)
+![Screenshot of Application Feature](https://raw.githubusercontent.com/entigra/activitylog/main/arts/resource.png)
 
 In your Panel ServiceProvider `(App\Providers\Filament)` active the plugin
 
-Add the `Rmsramos\Activitylog\ActivitylogPlugin` to your panel config
+Add the `Entigra\Activitylog\ActivitylogPlugin` to your panel config
 
 ```php
-use Rmsramos\Activitylog\ActivitylogPlugin;
+use Entigra\Activitylog\ActivitylogPlugin;
 
 public function panel(Panel $panel): Panel
 {
@@ -146,13 +146,13 @@ public function panel(Panel $panel): Panel
 
 ## Customising the ActivitylogResource
 
-You can swap out the `ActivitylogResource` used by updating the `->resource()` value. Use this to create your own `CustomResource` class and extend the original at `\Rmsramos\Activitylog\Resources\ActivitylogResource::class`. This will allow you to customise everything such as the views, table, form and permissions.
+You can swap out the `ActivitylogResource` used by updating the `->resource()` value. Use this to create your own `CustomResource` class and extend the original at `\Entigra\Activitylog\Resources\ActivitylogResource::class`. This will allow you to customise everything such as the views, table, form and permissions.
 
 > [!NOTE]
 > If you wish to change the resource on List and View page be sure to replace the `getPages` method on the new resource and create your own version of the `ListPage` and `ViewPage` classes to reference the custom `CustomResource`.
 
 ```php
-use Rmsramos\Activitylog\ActivitylogPlugin;
+use Entigra\Activitylog\ActivitylogPlugin;
 
 public function panel(Panel $panel): Panel
 {
@@ -169,7 +169,7 @@ public function panel(Panel $panel): Panel
 You can swap out the `Resource label` used by updating the `->label()` and `->pluralLabel()` value.
 
 ```php
-use Rmsramos\Activitylog\ActivitylogPlugin;
+use Entigra\Activitylog\ActivitylogPlugin;
 
 public function panel(Panel $panel): Panel
 {
@@ -187,7 +187,7 @@ public function panel(Panel $panel): Panel
 You can enable or disable the `Resource navigation item` by updating the `->navigationItem()` value.
 
 ```php
-use Rmsramos\Activitylog\ActivitylogPlugin;
+use Entigra\Activitylog\ActivitylogPlugin;
 
 public function panel(Panel $panel): Panel
 {
@@ -204,7 +204,7 @@ public function panel(Panel $panel): Panel
 You can add a `Resource navigation group` updating the `->navigationGroup()` value.
 
 ```php
-use Rmsramos\Activitylog\ActivitylogPlugin;
+use Entigra\Activitylog\ActivitylogPlugin;
 
 public function panel(Panel $panel): Panel
 {
@@ -221,7 +221,7 @@ public function panel(Panel $panel): Panel
 You can swap out the `Resource navigation icon` used by updating the `->navigationIcon()` value.
 
 ```php
-use Rmsramos\Activitylog\ActivitylogPlugin;
+use Entigra\Activitylog\ActivitylogPlugin;
 
 public function panel(Panel $panel): Panel
 {
@@ -238,7 +238,7 @@ public function panel(Panel $panel): Panel
 You can active `Count Badge` updating the `->navigationCountBadge()` value.
 
 ```php
-use Rmsramos\Activitylog\ActivitylogPlugin;
+use Entigra\Activitylog\ActivitylogPlugin;
 
 public function panel(Panel $panel): Panel
 {
@@ -255,7 +255,7 @@ public function panel(Panel $panel): Panel
 You can set the `Resource navigation sort` used by updating the `->navigationSort()` value.
 
 ```php
-use Rmsramos\Activitylog\ActivitylogPlugin;
+use Entigra\Activitylog\ActivitylogPlugin;
 
 public function panel(Panel $panel): Panel
 {
@@ -272,7 +272,7 @@ public function panel(Panel $panel): Panel
 If you would like to prevent certain users from accessing the logs resource, you should add a authorize callback in the `ActivitylogPlugin` chain.
 
 ```php
-use Rmsramos\Activitylog\ActivitylogPlugin;
+use Entigra\Activitylog\ActivitylogPlugin;
 
 public function panel(Panel $panel): Panel
 {
@@ -291,7 +291,7 @@ public function panel(Panel $panel): Panel
 To translate resource names in the activity log, add a `translateSubject` callback within the `ActivitylogPlugin` chain
 
 ```php
-use Rmsramos\Activitylog\ActivitylogPlugin;
+use Entigra\Activitylog\ActivitylogPlugin;
 
 public function panel(Panel $panel): Panel
 {
@@ -308,7 +308,7 @@ public function panel(Panel $panel): Panel
 To translate the names of the keys in the activity log, add a `translateLogKey` callback within the `ActivitylogPlugin` chain
 
 ```php
-use Rmsramos\Activitylog\ActivitylogPlugin;
+use Entigra\Activitylog\ActivitylogPlugin;
 
 public function panel(Panel $panel): Panel
 {
@@ -325,7 +325,7 @@ public function panel(Panel $panel): Panel
 To customize how dates are parsed, depending on user preferences or settings:
 
 ```php
-use Rmsramos\Activitylog\ActivitylogPlugin;
+use Entigra\Activitylog\ActivitylogPlugin;
 use Morilog\Jalali\Jalalian;
 use Carbon\Carbon;
 
@@ -348,7 +348,7 @@ public function panel(Panel $panel): Panel
 To customize the format of dates and datetime columns based on user settings:
 
 ```php
-use Rmsramos\Activitylog\ActivitylogPlugin;
+use Entigra\Activitylog\ActivitylogPlugin;
 
 public function panel(Panel $panel): Panel
 {
@@ -367,7 +367,7 @@ public function panel(Panel $panel): Panel
 To conditionally customize datetime columns in the UI, depending on the user's calendar preference:
 
 ```php
-use Rmsramos\Activitylog\ActivitylogPlugin;
+use Entigra\Activitylog\ActivitylogPlugin;
 
 public function panel(Panel $panel): Panel
 {
@@ -391,7 +391,7 @@ public function panel(Panel $panel): Panel
 To customize date picker fields in forms, depending on user preferences:
 
 ```php
-use Rmsramos\Activitylog\ActivitylogPlugin;
+use Entigra\Activitylog\ActivitylogPlugin;
 
 public function panel(Panel $panel): Panel
 {
@@ -415,7 +415,7 @@ public function panel(Panel $panel): Panel
 Implement `getFilamentActualResourceModel` in the trait `HasCustomActivityResource` to determine the actual model related to the activity record for generating valid URLs.
 
 ```php
-use Rmsramos\Activitylog\Traits\HasCustomActivityResource;
+use Entigra\Activitylog\Traits\HasCustomActivityResource;
 
 trait HasCustomActivityResource
 {
@@ -448,7 +448,7 @@ trait HasCustomActivityResource
 To hide the restore / view action globally for a resource within the `ActivitylogPlugin`, you can use the `isRestoreActionHidden` and `isResourceActionHidden` method. these are particularly useful in scenarios where you do not want users to have the ability to restore or view entries from the activity log. you can also customize the label of view action:
 
 ```php
-use Rmsramos\Activitylog\ActivitylogPlugin;
+use Entigra\Activitylog\ActivitylogPlugin;
 
 public function panel(Panel $panel): Panel
 {
@@ -475,7 +475,7 @@ return [
 To globally display the restore (soft delete) action of a resource within the `ActivitylogPlugin`, you can use the `isRestoreModelActionHidden` method. This is particularly useful in scenarios where you do not want users to have the ability to restore activity log entries:
 
 ```php
-use Rmsramos\Activitylog\ActivitylogPlugin;
+use Entigra\Activitylog\ActivitylogPlugin;
 
 public function panel(Panel $panel): Panel
 {
@@ -508,7 +508,7 @@ class AppServiceProvider extends ServiceProvider
 ## Full configuration
 
 ```php
-use Rmsramos\Activitylog\ActivitylogPlugin;
+use Entigra\Activitylog\ActivitylogPlugin;
 
 public function panel(Panel $panel): Panel
 {
@@ -560,11 +560,11 @@ public function panel(Panel $panel): Panel
 
 ## Relationship manager
 
-If you have a model that uses the `Spatie\Activitylog\Traits\LogsActivity` trait, you can add the `Rmsramos\Activitylog\RelationManagers\ActivitylogRelationManager` relationship manager to your Filament resource to display all of the activity logs that are performed on your model.
-![Screenshot of Application Feature](https://raw.githubusercontent.com/rmsramos/activitylog/main/arts/relationManager.png)
+If you have a model that uses the `Spatie\Activitylog\Traits\LogsActivity` trait, you can add the `Entigra\Activitylog\RelationManagers\ActivitylogRelationManager` relationship manager to your Filament resource to display all of the activity logs that are performed on your model.
+![Screenshot of Application Feature](https://raw.githubusercontent.com/entigra/activitylog/main/arts/relationManager.png)
 
 ```php
-use Rmsramos\Activitylog\RelationManagers\ActivitylogRelationManager;
+use Entigra\Activitylog\RelationManagers\ActivitylogRelationManager;
 
 public static function getRelations(): array
 {
@@ -576,12 +576,12 @@ public static function getRelations(): array
 
 ## Timeline Action
 
-![Screenshot of Application Feature](https://raw.githubusercontent.com/rmsramos/activitylog/main/arts/timeline.png)
+![Screenshot of Application Feature](https://raw.githubusercontent.com/entigra/activitylog/main/arts/timeline.png)
 
 To make viewing activity logs easier, you can use a custom action. In your UserResource in the table function, add the `ActivityLogTimelineTableAction`.
 
 ```php
-use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
+use Entigra\Activitylog\Actions\ActivityLogTimelineTableAction;
 
 public static function table(Table $table): Table
 {
@@ -608,7 +608,7 @@ public static function table(Table $table): Table
 You can configure the icons and colors, by default the `'heroicon-m-check'` icon and the `'primary'` color are used.
 
 ```php
-use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
+use Entigra\Activitylog\Actions\ActivityLogTimelineTableAction;
 
 public static function table(Table $table): Table
 {
@@ -630,7 +630,7 @@ public static function table(Table $table): Table
 You can limit the number of results in the query by passing a limit, by default the last 10 records are returned.
 
 ```php
-use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
+use Entigra\Activitylog\Actions\ActivityLogTimelineTableAction;
 
 public static function table(Table $table): Table
 {
@@ -645,7 +645,7 @@ public static function table(Table $table): Table
 ## Full Timeline configuration
 
 ```php
-use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
+use Entigra\Activitylog\Actions\ActivityLogTimelineTableAction;
 
 public static function table(Table $table): Table
 {
@@ -690,7 +690,7 @@ Special acknowledgment goes to these remarkable tools and people (developers), t
 
 ## Credits
 
--   [Rômulo Ramos](https://github.com/rmsramos)
+-   [Entigra](https://github.com/entigra)
 -   [All Contributors](../../contributors)
 
 ## License
