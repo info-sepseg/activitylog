@@ -2,13 +2,13 @@
 
 namespace Entigra\Activitylog\RelationManagers;
 
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Entigra\Activitylog\ActivitylogPlugin;
-use Entigra\Activitylog\Resources\ActivitylogResource;
+use Entigra\Activitylog\Resources\ActivitylogResource\ActivitylogResource;
+use Filament\Actions\ViewAction;
+use Filament\Schemas\Schema;
 
 class ActivitylogRelationManager extends RelationManager
 {
@@ -24,9 +24,9 @@ class ActivitylogRelationManager extends RelationManager
             ->headline();
     }
 
-    public function schema(Form $form): Form
+    public function schema(Schema $schema): Schema
     {
-        return ActivitylogResource::schema($form);
+        return ActivitylogResource::schema($schema);
     }
 
     public function table(Table $table): Table

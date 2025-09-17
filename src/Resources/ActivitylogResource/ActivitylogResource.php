@@ -2,22 +2,20 @@
 
 namespace Entigra\Activitylog\Resources\ActivitylogResource;
 
-
-use ActivitylogForm;
 use BackedEnum;
 use Exception;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Placeholder;
+use Filament\Infolists\Components\ViewEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\Column;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Auth\Access\Response;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -25,7 +23,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
-use Livewire\Component as Livewire;
 use Entigra\Activitylog\Actions\Concerns\ActionContent;
 use Entigra\Activitylog\ActivitylogPlugin;
 use Entigra\Activitylog\Helpers\ActivityLogHelper;
@@ -33,6 +30,8 @@ use Entigra\Activitylog\RelationManagers\ActivitylogRelationManager;
 use Entigra\Activitylog\Resources\ActivitylogResource\Pages\ListActivitylog;
 use Entigra\Activitylog\Resources\ActivitylogResource\Pages\ViewActivitylog;
 use Entigra\Activitylog\Traits\HasCustomActivityResource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
 use Spatie\Activitylog\Models\Activity;
 
 class ActivitylogResource extends Resource
@@ -40,7 +39,11 @@ class ActivitylogResource extends Resource
     use ActionContent;
 
     protected static ?string $slug = 'activitylogs';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 
+    /* -----------------------------------------------------------------
+     |  Modelo & Labels
+     |----------------------------------------------------------------- */
     public static function getModel(): string
     {
         return config('activitylog.activity_model', Activity::class);
@@ -78,60 +81,103 @@ class ActivitylogResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return ActivitylogPlugin::get()->getNavigationCountBadge() ?
-            number_format(static::getModel()::count()) : null;
+        return ActivitylogPlugin::get()->getNavigationCountBadge()
+            ? number_format(static::getModel()::count())
+            : null;
     }
 
-    protected static function getResourceUrl(Activity $record): string
+    /* -----------------------------------------------------------------
+     |  Autorização (Filament v4)
+     |----------------------------------------------------------------- */
+    public static function getViewAnyAuthorizationResponse(): Response
     {
-        $panelID = Filament::getCurrentPanel()->getId();
+        $policy = Gate::getPolicyFor(static::getModel());
 
-        if ($record->subject_type && $record->subject_id) {
-            try {
-                $model = app($record->subject_type);
-
-                if (ActivityLogHelper::classUsesTrait($model, HasCustomActivityResource::class)) {
-                    $resourceModel = $model->getFilamentActualResourceModel($record);
-                    $resourcePluralName = ActivityLogHelper::getResourcePluralName($resourceModel);
-
-                    return route('filament.' . $panelID . '.resources.' . $resourcePluralName . '.edit', ['record' => $resourceModel->id]);
-                }
-
-                // Fallback to a standard resource mapping
-                $resourcePluralName = ActivityLogHelper::getResourcePluralName($record->subject_type);
-
-                return route('filament.' . $panelID . '.resources.' . $resourcePluralName . '.edit', ['record' => $record->subject_id]);
-            } catch (Exception $e) {
-                // If there's any error generating the URL, return placeholder
-                return '#';
-            }
+        if ($policy && method_exists($policy, 'viewAny')) {
+            return Gate::authorize('viewAny', static::getModel());
         }
 
-        return '#';
+        return ActivitylogPlugin::get()->isAuthorized()
+            ? Response::allow()
+            : Response::deny();
     }
 
+    public static function getViewAuthorizationResponse(Model $record): Response
+    {
+        $policy = Gate::getPolicyFor(static::getModel());
+
+        if ($policy && method_exists($policy, 'view')) {
+            return Gate::authorize('view', $record);
+        }
+
+        return ActivitylogPlugin::get()->isAuthorized()
+            ? Response::allow()
+            : Response::deny();
+    }
+
+    public static function getCreateAuthorizationResponse(): Response
+    {
+        // Logs não devem ser criados manualmente
+        return Response::deny();
+    }
+
+    public static function getDeleteAuthorizationResponse(Model $record): Response
+    {
+        $policy = Gate::getPolicyFor(static::getModel());
+
+        if ($policy && method_exists($policy, 'delete')) {
+            return Gate::authorize('delete', $record);
+        }
+
+        return ActivitylogPlugin::get()->isAuthorized()
+            ? Response::allow()
+            : Response::deny();
+    }
+
+    public static function getRestoreAuthorizationResponse(Model $record): Response
+    {
+        $policy = Gate::getPolicyFor(static::getModel());
+
+        if ($policy && method_exists($policy, 'restore')) {
+            return Gate::authorize('restore', $record);
+        }
+
+        return ActivitylogPlugin::get()->isAuthorized()
+            ? Response::allow()
+            : Response::deny();
+    }
+
+    public static function getForceDeleteAuthorizationResponse(Model $record): Response
+    {
+        // Nunca permitir exclusão permanente
+        return Response::deny();
+    }
+
+    /* -----------------------------------------------------------------
+     |  Schema
+     |----------------------------------------------------------------- */
     public static function schema(Schema $schema): Schema
     {
-        // The ActivitylogForm class might need to be updated to use Filament\Forms\Form instead of Schema
-        // or ensure ActivitylogForm is correctly importing Schema.
-        return ActivitylogForm::configure($schema);
+        return $schema
+            ->schema([
+                Grid::make()
+                    ->schema([
+                        Group::make()
+                            ->schema([
+                                ViewEntry::make('subject')
+                                    ->view('activitylog::filament.infolists.components.activity-log-subject-entry'),
+                                ViewEntry::make('causer')
+                                    ->view('activitylog::filament.infolists.components.activity-log-causer-entry'),
+                            ]),
+                        ViewEntry::make('changes')
+                            ->view('activitylog::filament.infolists.components.activity-log-changes-entry'),
+                    ]),
+            ]);
     }
 
-    protected static function flattenArrayForKeyValue(array $data): array
-    {
-        $flattened = [];
-
-        foreach ($data as $key => $value) {
-            if (is_array($value) || is_object($value)) {
-                $flattened[$key] = json_encode($value, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
-            } else {
-                $flattened[$key] = $value;
-            }
-        }
-
-        return $flattened;
-    }
-
+    /* -----------------------------------------------------------------
+     |  Table
+     |----------------------------------------------------------------- */
     public static function table(Table $table): Table
     {
         return $table
@@ -167,6 +213,9 @@ class ActivitylogResource extends Resource
             ]);
     }
 
+    /* -----------------------------------------------------------------
+     |  Columns
+     |----------------------------------------------------------------- */
     public static function getLogNameColumnComponent(): Column
     {
         return TextColumn::make('log_name')
@@ -200,8 +249,7 @@ class ActivitylogResource extends Resource
         return TextColumn::make('subject_type')
             ->label(__('activitylog::tables.columns.subject_type.label'))
             ->formatStateUsing(function ($state, Model $record) {
-                /** @var Activity $record */
-                if (! $state) {
+                if (!$state) {
                     return '-';
                 }
 
@@ -218,7 +266,7 @@ class ActivitylogResource extends Resource
                 return $subjectInfo;
             })
             ->searchable()
-            ->hidden(fn(Livewire $livewire) => $livewire instanceof ActivitylogRelationManager);
+            ->hidden(fn($livewire) => $livewire instanceof ActivitylogRelationManager);
     }
 
     public static function getCauserNameColumnComponent(): Column
@@ -226,7 +274,6 @@ class ActivitylogResource extends Resource
         return TextColumn::make('causer.name')
             ->label(__('activitylog::tables.columns.causer.label'))
             ->getStateUsing(function (Model $record) {
-                /** @var Activity $record */
                 if ($record->causer_id === null || $record->causer === null) {
                     return new HtmlString('&mdash;');
                 }
@@ -238,7 +285,7 @@ class ActivitylogResource extends Resource
 
     public static function getPropertiesColumnComponent(): Column
     {
-        return ViewColumn::make('properties')
+        return TextColumn::make('properties')
             ->searchable()
             ->label(__('activitylog::tables.columns.properties.label'))
             ->view('activitylog::filament.tables.columns.activity-logs-properties')
@@ -253,30 +300,23 @@ class ActivitylogResource extends Resource
             ->searchable()
             ->sortable();
 
-        // Apply the custom callback if set
         $callback = ActivitylogPlugin::get()->getDatetimeColumnCallback();
 
-        if ($callback) {
-            $column = $callback($column);
-        }
-
-        return $column;
+        return $callback ? $callback($column) : $column;
     }
 
+    /* -----------------------------------------------------------------
+     |  Filters
+     |----------------------------------------------------------------- */
     public static function getDatePickerCompoment(string $label): DatePicker
     {
         $field = DatePicker::make($label)
             ->format(ActivitylogPlugin::get()->getDateFormat())
             ->label(__('activitylog::tables.filters.created_at.' . $label));
 
-        // Apply the custom callback if set
         $callback = ActivitylogPlugin::get()->getDatePickerCallback();
 
-        if ($callback) {
-            $field = $callback($field);
-        }
-
-        return $field;
+        return $callback ? $callback($field) : $field;
     }
 
     public static function getDateFilterComponent(): Filter
@@ -338,6 +378,9 @@ class ActivitylogResource extends Resource
             ->options(static::getModel()::distinct()->pluck('log_name', 'log_name')->filter());
     }
 
+    /* -----------------------------------------------------------------
+     |  Pages
+     |----------------------------------------------------------------- */
     public static function getPages(): array
     {
         return [
@@ -346,54 +389,14 @@ class ActivitylogResource extends Resource
         ];
     }
 
-    public static function shouldRegisterNavigation(): bool
-    {
-        $plugin = Filament::getCurrentPanel()?->getPlugin('rmsramos/activitylog');
-
-        return $plugin?->getNavigationItem ?? false;
-    }
-
-    public static function canAccess(): bool
-    {
-        $policy = Gate::getPolicyFor(static::getModel());
-
-        if ($policy && method_exists($policy, 'viewAny')) {
-            return static::canViewAny();
-        }
-
-        return ActivitylogPlugin::get()->isAuthorized();
-    }
-
-    protected static function canViewResource(Activity $record): bool
-    {
-        if ($record->subject_type && $record->subject_id) {
-            try {
-                $model = app($record->subject_type);
-
-                if (ActivityLogHelper::classUsesTrait($model, HasCustomActivityResource::class)) {
-                    $resourceModel = $model->getFilamentActualResourceModel($record);
-                    $user = auth()->user();
-
-                    return $user && $user->can('update', $resourceModel);
-                }
-
-                // Fallback to check if the user can edit the model using a generic policy
-                $user = auth()->user();
-
-                return $user && $record->subject && $user->can('update', $record->subject);
-            } catch (Exception $e) {
-                return false;
-            }
-        }
-
-        return false;
-    }
-
+    /* -----------------------------------------------------------------
+     |  Restore / Undo Actions
+     |----------------------------------------------------------------- */
     public static function restoreActivity(int|string $key): void
     {
         $activity = Activity::find($key);
 
-        if (! $activity) {
+        if (!$activity) {
             Notification::make()
                 ->title(__('activitylog::notifications.activity_not_found'))
                 ->danger()
@@ -417,7 +420,7 @@ class ActivitylogResource extends Resource
         try {
             $record = $activity->subject;
 
-            if (! $record) {
+            if (!$record) {
                 Notification::make()
                     ->title(__('activitylog::notifications.subject_not_found'))
                     ->danger()
@@ -426,7 +429,6 @@ class ActivitylogResource extends Resource
                 return;
             }
 
-            // Temporarily disable activity logging to prevent updated log
             activity()->withoutLogs(function () use ($record, $oldProperties) {
                 $record->update($oldProperties);
             });
@@ -439,9 +441,7 @@ class ActivitylogResource extends Resource
                         'attributes' => $oldProperties,
                         'old' => $newProperties,
                     ])
-                    ->tap(function ($log) {
-                        $log->event = 'restored';
-                    })
+                    ->tap(fn($log) => $log->event = 'restored')
                     ->log('restored');
             }
 
@@ -472,24 +472,21 @@ class ActivitylogResource extends Resource
             return false;
         }
 
-        if (! $record->subject) {
+        if (!$record->subject) {
             return false;
         }
 
-        if (
-            ! method_exists($record->subject, 'trashed') ||
-            ! method_exists($record->subject, 'restore')
-        ) {
+        if (!method_exists($record->subject, 'trashed') || !method_exists($record->subject, 'restore')) {
             return false;
         }
 
-        if (! $record->subject->trashed()) {
+        if (!$record->subject->trashed()) {
             return false;
         }
 
         $user = auth()->user();
 
-        if ($user && method_exists($record->subject, 'exists')) {
+        if ($user) {
             try {
                 return $user->can('restore', $record->subject);
             } catch (\Exception $e) {
@@ -502,7 +499,7 @@ class ActivitylogResource extends Resource
 
     public static function restoreSubjectFromSoftDelete(Activity $record): void
     {
-        if (! static::canRestoreSubjectFromSoftDelete($record)) {
+        if (!static::canRestoreSubjectFromSoftDelete($record)) {
             Notification::make()
                 ->title(__('activitylog::notifications.unable_to_restore_this_model'))
                 ->danger()
@@ -515,12 +512,9 @@ class ActivitylogResource extends Resource
             DB::beginTransaction();
 
             $subject = $record->subject;
-
             $beforeRestore = $subject->toArray();
 
-            activity()->withoutLogs(function () use ($subject) {
-                $subject->restore();
-            });
+            activity()->withoutLogs(fn() => $subject->restore());
 
             $subject->refresh();
             $afterRestore = $subject->toArray();
@@ -538,9 +532,7 @@ class ActivitylogResource extends Resource
                             'restore_type' => 'soft_delete',
                         ],
                     ])
-                    ->tap(function ($log) {
-                        $log->event = 'restored';
-                    })
+                    ->tap(fn($log) => $log->event = 'restored')
                     ->log('restored');
             }
 

@@ -4,9 +4,8 @@ namespace Entigra\Activitylog\Actions\Concerns;
 
 use Carbon\Exceptions\InvalidFormatException;
 use Closure;
-use Filament\Actions\StaticAction;
+
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Infolist;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -16,6 +15,7 @@ use Entigra\Activitylog\Infolists\Components\TimeLineIconEntry;
 use Entigra\Activitylog\Infolists\Components\TimeLinePropertiesEntry;
 use Entigra\Activitylog\Infolists\Components\TimeLineRepeatableEntry;
 use Entigra\Activitylog\Infolists\Components\TimeLineTitleEntry;
+use Filament\Schemas\Schema;
 use Spatie\Activitylog\Models\Activity;
 
 trait ActionContent
@@ -124,7 +124,7 @@ trait ActionContent
     }
     protected function configureInfolist(): void
     {
-        $this->infolist(function (?Model $record, Infolist $infolist) {
+        $this->infolist(function (?Model $record, Schema $schema) {
             $activities = $this->getActivityLogRecord($record, $this->getWithRelations());
 
             $formattedActivities = $activities->map(function ($activity) {
@@ -136,7 +136,7 @@ trait ActionContent
                 ];
             })->toArray();
 
-            return $infolist
+            return $schema
                 ->state(['activities' => $formattedActivities])
                 ->schema($this->getSchema());
         });
@@ -178,28 +178,28 @@ trait ActionContent
         ];
     }
 
-    public function withRelations(?array $relations = null): ?StaticAction
+    public function withRelations(?array $relations = null)
     {
         $this->withRelations = $relations;
 
         return $this;
     }
 
-    public function timelineIcons(?array $timelineIcons = null): ?StaticAction
+    public function timelineIcons(?array $timelineIcons = null)
     {
         $this->timelineIcons = $timelineIcons;
 
         return $this;
     }
 
-    public function timelineIconColors(?array $timelineIconColors = null): ?StaticAction
+    public function timelineIconColors(?array $timelineIconColors = null)
     {
         $this->timelineIconColors = $timelineIconColors;
 
         return $this;
     }
 
-    public function limit(?int $limit = 10): ?StaticAction
+    public function limit(?int $limit = 10)
     {
         $this->limit = $limit;
 
