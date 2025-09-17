@@ -2,6 +2,7 @@
 
 namespace Entigra\Activitylog;
 
+use BackedEnum;
 use Closure;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
@@ -42,7 +43,7 @@ class ActivitylogPlugin implements Plugin
 
     protected ?Closure $translateLogKey = null;
 
-    protected ?string $navigationIcon = null;
+    protected static string|\BackedEnum|null $navigationIcon = null;
 
     protected ?int $navigationSort = null;
 
@@ -59,7 +60,7 @@ class ActivitylogPlugin implements Plugin
 
     public function getId(): string
     {
-        return 'rmsramos/activitylog';
+        return 'entigra/activitylog';
     }
 
     public function register(Panel $panel): void
@@ -172,7 +173,7 @@ class ActivitylogPlugin implements Plugin
         return $this->dateParser ?? fn($date) => Carbon::parse($date);
     }
 
-    public function getNavigationIcon(): ?string
+    public function getNavigationIcon(): string|BackedEnum|null
     {
         return $this->navigationIcon ?? config('filament-activitylog.resources.navigation_icon');
     }
@@ -299,7 +300,7 @@ class ActivitylogPlugin implements Plugin
         return $this;
     }
 
-    public function navigationIcon(string $icon): static
+    public function navigationIcon(string|BackedEnum|null $icon): static
     {
         $this->navigationIcon = $icon;
 

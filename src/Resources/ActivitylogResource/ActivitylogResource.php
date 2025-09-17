@@ -4,6 +4,7 @@ namespace Entigra\Activitylog\Resources\ActivitylogResource;
 
 
 use ActivitylogForm;
+use BackedEnum;
 use Exception;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
@@ -55,7 +56,7 @@ class ActivitylogResource extends Resource
         return ActivitylogPlugin::get()->getPluralLabel();
     }
 
-    public static function getNavigationIcon(): string
+    public static function getNavigationIcon(): string|BackedEnum|null
     {
         return ActivitylogPlugin::get()->getNavigationIcon();
     }
@@ -349,7 +350,7 @@ class ActivitylogResource extends Resource
     {
         $plugin = Filament::getCurrentPanel()?->getPlugin('rmsramos/activitylog');
 
-        return $plugin?->getNavigationItem() ?? false;
+        return $plugin?->getNavigationItem ?? false;
     }
 
     public static function canAccess(): bool
